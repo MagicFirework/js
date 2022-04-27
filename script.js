@@ -24,7 +24,7 @@ const appData = {
     do {
       appData.title = prompt(
         "Как называется ваш проект?",
-        " кальКУлятоР веРстКи"
+        "        кальКУлятоР веРстКи      "
       );
     } while (!isNaN(appData.title));
 
@@ -73,9 +73,14 @@ const appData = {
     appData.adaptive = confirm("Нужен ли адаптив на сайте?");
   },
   addPrices: function () {
-    for (let key of appData.screens) {
-      appData.screenPrice += key.price;
-    }
+    // for (let key of appData.screens) {
+    //   appData.screenPrice += key.price;
+    // }
+
+    appData.screenPrice = appData.screens.reduce(function (sum, item) {
+      return sum + item.price;
+    }, 0);
+
     for (let key in appData.services) {
       appData.allServicePrices += appData.services[key];
     }
@@ -123,5 +128,4 @@ const appData = {
 appData.start();
 
 //4 выводим консоль
-
-//6 моя консоль
+//5 моя консоль
