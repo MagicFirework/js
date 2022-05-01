@@ -3,34 +3,88 @@
 
 const appData = {
   title: "",
-  screens: "",
+  screens: [],
   screenPrice: 0,
   adaptive: true,
   rollback: 10, // процент посреднику
   allServicePrices: 0,
   fullPrice: 0,
   servicePercentPrice: 0,
-  service1: "",
-  service2: "",
+  services: {},
 
+  start: function () {
+    appData.asking();
+    appData.addPrices();
+    appData.getTitle();
+    appData.getFullPrice();
+    appData.getServicePercentPrices();
+    appData.logger();
+  },
   asking: function () {
-    let toNum;
-    appData.title = prompt(
-      "Как называется ваш проект?",
-      " кальКУлятоР веРстКи"
-    );
-    appData.screens = prompt(
-      "Какие типы экранов нужно разработать?",
-      "Простые, Сложные, Интерактивные"
-    );
     do {
-      toNum = prompt("Сколько будет стоить данная работа?", "30000");
-    } while (!appData.isNumber(toNum));
-    appData.screenPrice = +toNum;
+      appData.title = prompt(
+        "Как называется ваш проект?",
+        " кальКУлятоР веРстКи"
+      );
+    } while (!isNaN(appData.title));
+
+    for (let i = 0; i < 2; i++) {
+      let text;
+      let num;
+      if (i === 0) {
+        text = "Простые";
+        num = "10000";
+      } else if (i === 1) {
+        text = "Сложные";
+        num = "20000";
+      }
+
+      let price = 0;
+      let name;
+      do {
+        name = prompt("Какие типы экранов нужно разработать?", `${text}`);
+      } while (!isNaN(name));
+
+      do {
+        price = prompt("Сколько будет стоить данная работа?", `${num}`);
+      } while (!appData.isNumber(price));
+
+      price = appData.delWord(price);
+      appData.screens.push({ id: i + 1, name: name, price: +price });
+    }
+
+    for (let i = 0; i < 2; i++) {
+      let price = 0;
+
+      let name;
+      do {
+        name = prompt("Какой дополнительный тип услуги нужен?", "SEO");
+      } while (!isNaN(name));
+
+      let uniqueName = `Услуга ${i + 1} - ${name}`;
+
+      do {
+        price = prompt("Сколько это будет стоить?", "1000");
+      } while (!appData.isNumber(price));
+
+      price = appData.delWord(price);
+      appData.services[uniqueName] = +price;
+    }
     appData.adaptive = confirm("Нужен ли адаптив на сайте?");
+  },
+  addPrices: function () {
+    for (let key of appData.screens) {
+      appData.screenPrice += key.price;
+    }
+    for (let key in appData.services) {
+      appData.allServicePrices += appData.services[key];
+    }
   },
   isNumber: function (num) {
     return !isNaN(parseFloat(num) && isFinite(num));
+  },
+  delWord: function (num) {
+    return num.replace(/[^0-9]/g, "");
   },
   getRollbackMessage: function (price) {
     if (price >= 30000) {
@@ -43,57 +97,23 @@ const appData = {
       return "Что то пошло не так";
     }
   },
-  getAllServicePrices: function () {
-    let sum = 0;
-    for (let i = 0; i < 2; i++) {
-      let price = 0;
-
-      if (i === 0) {
-        appData.service1 = prompt(
-          "Какой первый тип услуги нужен?",
-          "Первая услуга"
-        );
-      } else if (i === 1) {
-        appData.service2 = prompt(
-          "Какой второй тип услуги нужен?",
-          "Вторая услуга"
-        );
-      }
-
-      do {
-        price = prompt("Сколько это будет стоить?", "1000");
-      } while (!appData.isNumber(price));
-      sum += +price;
-    }
-    return sum;
-  },
   getFullPrice: function () {
-    return appData.screenPrice + appData.allServicePrices;
+    appData.fullPrice = appData.screenPrice + appData.allServicePrices;
   },
   getTitle: function () {
-    return (
+    appData.title =
       appData.title.trim()[0].toUpperCase() +
-      appData.title.trim().substring(1).toLowerCase()
-    );
+      appData.title.trim().substring(1).toLowerCase();
   },
   getServicePercentPrices: function () {
-    return (
+    appData.servicePercentPrice =
       appData.fullPrice -
-      Math.ceil(appData.fullPrice * (appData.rollback / 100))
-    );
+      Math.ceil(appData.fullPrice * (appData.rollback / 100));
   },
   logger: function () {
     for (let key in appData) {
       console.log(key, appData[key]);
     }
-  },
-  start: function () {
-    appData.asking();
-    appData.title = appData.getTitle();
-    appData.allServicePrices = appData.getAllServicePrices();
-    appData.fullPrice = appData.getFullPrice();
-    appData.servicePercentPrice = appData.getServicePercentPrices();
-    appData.logger();
   },
 };
 
