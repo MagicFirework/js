@@ -24,7 +24,7 @@ const appData = {
     do {
       appData.title = prompt(
         "Как называется ваш проект?",
-        "        кальКУлятоР веРстКи      "
+        "        каЛьКулятОР веРстКи      "
       );
     } while (!isNaN(appData.title));
 
@@ -117,15 +117,48 @@ const appData = {
   },
   logger: function () {
     for (let key in appData) {
-      console.log(key, appData[key]);
+      // console.log(key, appData[key]);
     }
   },
 };
+const title = document.getElementsByTagName("h1");
+const startBtn = document.getElementsByClassName("handler_btn").start;
+const resetBtn = document.getElementsByClassName("handler_btn").reset;
+const plus = document.querySelector(".screen-btn");
+let numbers = document.querySelectorAll(".other-items.number");
+let percent = document.querySelectorAll(".other-items.percent");
+const rollback = document.querySelector('.rollback > div > [type="range"]');
+const rollbackValue = document.querySelector(
+  ".rollback > div > span.range-value"
+);
+let allInputs;
+let screen = document.querySelectorAll(".screen");
 
 //2 обьявление функций
 
+const getTotalInputs = function () {
+  //перебрал массив allInputs  (.getElementsByClassName)
+  allInputs = document.getElementsByClassName("total-input");
+  for (var i = 0; i < allInputs.length; i++) {
+    console.log(allInputs[i]);
+  }
+};
+percent.forEach(function (item) {
+  //перебрал массив percent (queryselector)
+  console.log(item);
+});
+numbers.forEach(function (item) {
+  //перебрал массив numbers (queryselector)
+  console.log(item);
+});
+screen.forEach(function (item) {
+  //перебрал массив screen (queryselector)
+  console.log(item);
+});
+
 //3 Выполняем функции и переопределяем значение переменных
 appData.start();
+title[0].innerHTML = appData.title;
+allInputs = getTotalInputs();
 
 //4 выводим консоль
-//5 моя консоль
