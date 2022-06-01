@@ -17,10 +17,12 @@ const totalCount = document.getElementsByClassName("total-input")[1];
 const totalCountOther = document.getElementsByClassName("total-input")[2];
 const fullTotalCount = document.getElementsByClassName("total-input")[3];
 const totalCountRollback = document.getElementsByClassName("total-input")[4];
-const isNumber = function (num) {
+
+let screens = document.querySelectorAll(".screen");
+
+const isNumber = (num) => {
   return !isNaN(parseFloat(num) && isFinite(num));
 };
-let screens = document.querySelectorAll(".screen");
 
 const appData = {
   title: "",
@@ -35,19 +37,81 @@ const appData = {
   servicesPercent: {},
   servicesNumber: {},
   count: 0,
-
   isError: false,
   array: [],
   //1 Клик
-  init: () => {
-    appData.addTitle();
+  init: function () {
+    this.addTitle();
     appData.getRollback();
-    startBtn.addEventListener("click", () => {
-      // Добавить что-то, чтобы  при клике сначало сбрасывало предыдущие вычесления
-      appData.checkSelected();
-    });
+    startBtn.addEventListener("click", appData.checkSelected);
+    resetBtn.addEventListener("click", appData.reset);
     buttonPlus.addEventListener("click", appData.addScreenBlock);
   },
+  showReset: () => {
+    const typeText = document.querySelectorAll(".screen input[type=text]");
+    const typeCheckbox = document.querySelectorAll("input[type=checkbox]");
+    const select = document.querySelectorAll("select");
+    const array = [
+      ...typeText,
+      ...typeCheckbox,
+      ...select,
+      inputRange,
+      buttonPlus,
+    ];
+
+    array.forEach((item) => {
+      item.disabled = true;
+    });
+
+    startBtn.style.display = "none";
+    resetBtn.style.display = "block";
+  },
+  reset: () => {
+    const typeText = document.querySelectorAll(".screen input[type=text]");
+    const typeCheckbox = document.querySelectorAll("input[type=checkbox]");
+    const select = document.querySelectorAll("select");
+    const array = [
+      ...typeText,
+      ...typeCheckbox,
+      ...select,
+      inputRange,
+      buttonPlus,
+    ];
+
+    array.forEach((item) => {
+      item.disabled = false;
+    });
+
+    startBtn.style.display = "block";
+    resetBtn.style.display = "none";
+
+    appData.screens = [];
+    appData.screenPrice = 0;
+    appData.adaptive = true;
+    appData.rollback = 0;
+    appData.servicePricesPercent = 0;
+    appData.servicePricesNumber = 0;
+    appData.fullPrice = 0;
+    appData.servicePercentPrice = 0;
+    appData.servicesPercent = {};
+    appData.servicesNumber = {};
+    appData.count = 0;
+    appData.array = [];
+
+    typeCheckbox.forEach((item) => {
+      item.checked = false;
+    });
+    inputRange.value = 0;
+    inputRangeValue.textContent = inputRange.value + "%";
+
+    screens.forEach((item) => {
+      item.remove();
+    });
+    appData.addScreenBlock();
+
+    appData.showResult();
+  },
+
   //2 отбор выбранных инпутов
   checkSelected: () => {
     screens = document.querySelectorAll(".screen");
@@ -107,6 +171,7 @@ const appData = {
     appData.addPrices();
     appData.getServicePercentPrices();
     appData.showResult();
+    appData.showReset();
   },
 
   showResult: () => {
@@ -117,6 +182,7 @@ const appData = {
     fullTotalCount.value = appData.fullPrice + "руб";
     totalCountRollback.value = appData.servicePercentPrice + "руб";
   },
+
   addScreens: () => {
     screens = document.querySelectorAll(".screen");
     // переопределяем переменную чтобы в коллекцию добавлялись новые данные
@@ -136,9 +202,32 @@ const appData = {
   },
 
   addScreenBlock: () => {
-    const cloneScreen = screens[0].cloneNode(true);
+    screens = document.querySelectorAll(".screen");
+    const all = document.querySelector(".main-controls__views");
+    const newScreen = document.createElement("div");
+    newScreen.classList.add("main-controls__item", "screen");
+    newScreen.innerHTML =
+      '<div class="main-controls__select">' +
+      '<select name="views-select">' +
+      '<option value="" selected>Тип экранов</option>' +
+      '<option value="500">Простых 500руб * n</option>' +
+      '<option value="700">Сложных 700руб * n</option>' +
+      '<option value="800">Интерактивных 800руб * n</option>' +
+      '<option value="100">Форм 100руб * n</option>' +
+      '<option value="300">Слайдеров 300руб * n</option>' +
+      '<option value="200">Модальные окна 200руб * n</option>' +
+      '<option value="100">Анимация в блоках 100руб * n</option>' +
+      "</select>" +
+      "</div>" +
+      '<div class="main-controls__input">' +
+      '<input type="text" placeholder="Количество экранов">' +
+      "</div>";
 
-    screens[screens.length - 1].after(cloneScreen);
+    all.append(newScreen);
+    all.append(buttonPlus);
+
+    // const cloneScreen = screens[0].cloneNode(true); // если вдруг надо просто скланировать
+    // screens[screens.length - 1].after(newScreen); // добавить после последнего элемента
   },
 
   addServices: () => {
@@ -168,7 +257,7 @@ const appData = {
     //   appData.screenPrice += key.price;
     // }
 
-    appData.screenPrice = appData.screens.reduce(function (sum, item) {
+    appData.screenPrice = appData.screens.reduce((sum, item) => {
       return sum + item.price;
     }, 0);
 
@@ -198,11 +287,11 @@ const appData = {
       appData.fullPrice -
       Math.ceil(appData.fullPrice * (appData.rollback / 100));
   },
-  logger: () => {
-    for (let key in appData) {
-      // console.log(key, appData[key]);
-    }
-  },
+  // logger: () => {
+  //   for (let key in appData) {
+  //     // console.log(key, appData[key]);
+  //   }
+  // },
 };
 //2 обьявление функций
 
